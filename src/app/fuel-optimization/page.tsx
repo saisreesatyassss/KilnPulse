@@ -22,7 +22,7 @@ const formSchema = z.object({
     maxCost: z.number().min(0),
     minCalorificValue: z.number().min(0),
     maxAshContent: z.number().min(0).max(100),
-}).refine(data => data.coal + data.petcoke + data.biomass === 100, {
+}).refine(data => Math.round(data.coal + data.petcoke + data.biomass) === 100, {
     message: "The sum of fuel percentages must be 100.",
     path: ["coal"],
 });
@@ -66,46 +66,47 @@ export default function FuelOptimizationPage() {
         });
     };
     
-    const handleSliderChange = (fuel: keyof FormValues) => (value: number[]) => {
-        const otherFuels = (['coal', 'petcoke', 'biomass'] as const).filter(f => f !== fuel);
-        const currentValue = form.getValues(fuel);
-        const diff = value[0] - currentValue;
+    const handleSliderChange = (fuel: keyof Pick<FormValues, 'coal' | 'petcoke' | 'biomass'>) => (value: number[]) => {
+        const newValue = value[0];
+        const prevValues = form.getValues();
+        const prevFuelValue = prevValues[fuel];
+        const diff = newValue - prevFuelValue;
 
-        let remainingDiff = diff;
-        const adjustments: Partial<FormValues> = {[fuel]: value[0]};
-        
-        // Adjust other fuels proportionally
-        let totalOther = otherFuels.reduce((sum, f) => sum + form.getValues(f), 0);
+        const otherFuels = (['coal', 'petcoke', 'biomass'] as const).filter(f => f !== fuel);
+        const totalOther = otherFuels.reduce((sum, f) => sum + prevValues[f], 0);
+
+        let adjustments: Partial<Record<keyof FuelMix, number>> = { [fuel]: newValue };
+        let remainingDiff = -diff;
+
         if (totalOther > 0) {
-           otherFuels.forEach(f => {
-               const proportion = form.getValues(f) / totalOther;
-               const adjustment = Math.min(form.getValues(f), diff * proportion);
-               adjustments[f] = form.getValues(f) - adjustment;
-               remainingDiff -= adjustment;
-           });
+             otherFuels.forEach(f => {
+                const proportion = prevValues[f] / totalOther;
+                const adjustment = remainingDiff * proportion;
+                adjustments[f] = prevValues[f] + adjustment;
+            });
         }
         
-        let currentTotal = Object.values(adjustments).reduce((sum, v) => sum + (v as number), 0);
-        
-        otherFuels.forEach(f => {
-             const oldValue = form.getValues(f);
-             const newValue = (adjustments[f] ?? oldValue) - (remainingDiff * (oldValue / totalOther));
-             if(newValue >= 0 && newValue <= 100){
-                adjustments[f] = newValue;
-             }
+        let total = Object.values(adjustments).reduce((sum, v) => sum + v, 0);
+
+        if (Math.round(total) !== 100) {
+            const roundingError = 100 - total;
+            const fuelToAdjust = otherFuels.find(f => (adjustments[f] ?? 0) + roundingError >= 0) ?? fuel;
+            adjustments[fuelToAdjust] = (adjustments[fuelToAdjust] ?? 0) + roundingError;
+        }
+
+        Object.entries(adjustments).forEach(([key, val]) => {
+            let finalValue = Math.max(0, Math.min(100, val));
+            form.setValue(key as keyof FormValues, parseFloat(finalValue.toFixed(1)));
         });
-        
-        let total = Object.values(adjustments).reduce((sum, v) => sum + (v as number), 0);
-        
-        // Final rounding adjustment to ensure sum is 100
-        const roundDiff = 100 - total;
-        const mainAdjustFuel = otherFuels.find(f => (adjustments[f] ?? 0) + roundDiff >= 0) || fuel;
-        adjustments[mainAdjustFuel] = (adjustments[mainAdjustFuel] ?? 0) + roundDiff;
 
-
-        Object.entries(adjustments).forEach(([key, val])=>{
-            form.setValue(key as keyof FormValues, parseFloat(val.toFixed(1)));
-        })
+        // Final check to enforce 100% sum
+        const finalValues = form.getValues();
+        const finalTotal = finalValues.coal + finalValues.petcoke + finalValues.biomass;
+        if(Math.round(finalTotal) !== 100) {
+            const finalDiff = 100 - finalTotal;
+            const lastFuelToAdjust = otherFuels.find(f => f !== fuel) ?? 'coal';
+            form.setValue(lastFuelToAdjust, form.getValues(lastFuelToAdjust) + finalDiff);
+        }
     };
 
 
@@ -289,3 +290,5 @@ export default function FuelOptimizationPage() {
         </div>
     );
 }
+
+    
