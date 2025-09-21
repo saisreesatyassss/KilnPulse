@@ -32,3 +32,23 @@ export type AIOperatorAssistantResponse = {
     correctiveActions: string;
     reasoning: string;
 }
+
+export type FuelMix = {
+    coal: number;
+    petcoke: number;
+    biomass: number;
+};
+
+export type Constraints = {
+    maxCost: number;
+    minCalorificValue: number;
+    maxAshContent: number;
+};
+
+export type OptimizationResult = {
+    recommendedMix: FuelMix;
+    thermalSubstitutionRate: number;
+    co2Emissions: number;
+    costSavings: number;
+    reasoning: string;
+};

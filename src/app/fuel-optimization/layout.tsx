@@ -3,17 +3,20 @@ import {
   SidebarContent,
   SidebarHeader,
   SidebarInset,
-  SidebarProvider,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarProvider,
 } from '@/components/ui/sidebar';
-import KilnHeartbeatDashboard from '@/components/dashboard/KilnHeartbeatDashboard';
 import { KilnPulseLogo } from '@/components/icons/KilnPulseLogo';
 import { LayoutDashboard, Fuel } from 'lucide-react';
 import Link from 'next/link';
 
-export default function Home() {
+export default function FuelOptimizationLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <SidebarProvider>
       <Sidebar side="left" collapsible="icon" className="border-r">
@@ -26,7 +29,7 @@ export default function Home() {
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Dashboard" isActive>
+              <SidebarMenuButton asChild tooltip="Dashboard">
                 <Link href="/">
                   <LayoutDashboard />
                   <span>Dashboard</span>
@@ -34,7 +37,7 @@ export default function Home() {
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Fuel Optimization">
+              <SidebarMenuButton asChild tooltip="Fuel Optimization" isActive>
                 <Link href="/fuel-optimization">
                   <Fuel />
                   <span>Fuel Optimization</span>
@@ -44,9 +47,7 @@ export default function Home() {
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
-      <SidebarInset>
-        <KilnHeartbeatDashboard />
-      </SidebarInset>
+      <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );
 }
