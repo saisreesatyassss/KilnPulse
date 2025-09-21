@@ -34,20 +34,14 @@ const generateVisualSummaryFlow = ai.defineFlow(
   },
   async (input) => {
     const { media } = await ai.generate({
-        model: 'googleai/gemini-2.5-flash-image-preview',
-        prompt: [
-            {text: `You are an expert at creating process diagrams for industrial settings.
-            Based on the following text description, generate a clear, customized visual diagram or infographic.
-            The diagram should be easy to understand and visually represent the key elements, flows, and statuses mentioned.
-            Use a clean, modern style with clear labels and icons appropriate for an industrial context.
+        model: 'googleai/imagen-4.0-fast-generate-001',
+        prompt: `You are an expert at creating process diagrams for industrial settings.
+        Based on the following text description, generate a clear, customized visual diagram or infographic.
+        The diagram should be easy to understand and visually represent the key elements, flows, and statuses mentioned.
+        Use a clean, modern style with clear labels and icons appropriate for an industrial context.
 
-            Description:
-            ${input.description}`
-            },
-        ],
-        config: {
-            responseModalities: ['TEXT', 'IMAGE'],
-        },
+        Description:
+        ${input.description}`,
     });
 
     if (!media?.url) {
