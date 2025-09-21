@@ -110,9 +110,10 @@ export default function VisualSummaryPage() {
                                     <Image
                                         src={imageUrl}
                                         alt="Generated Process Summary Diagram"
-                                        layout="fill"
-                                        objectFit="contain"
+                                        fill
+                                        style={{objectFit: "contain"}}
                                         className="rounded-lg"
+                                        unoptimized
                                     />
                                 </div>
                             )}
