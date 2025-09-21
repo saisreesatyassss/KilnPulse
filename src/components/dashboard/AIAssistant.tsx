@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Bot, User, Loader2, Info, Activity, ShieldCheck, BrainCircuit } from 'lucide-react';
+import { Bot, User, Loader2, Info, Activity, ShieldCheck, BrainCircuit, Play } from 'lucide-react';
 import { getAIAssistantResponseAction } from "@/lib/actions";
 import type { Message, AIOperatorAssistantResponse } from "@/lib/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 type AIAssistantProps = {
   isOpen: boolean;
@@ -23,6 +24,18 @@ type AIAssistantProps = {
 };
 
 const AssistantMessage = ({ message }: { message: AIOperatorAssistantResponse }) => {
+    const { toast } = useToast();
+
+    const handleAutomate = (action: string) => {
+        toast({
+            title: "Automation Task Started",
+            description: `Executing: "${action}"`
+        });
+    };
+    
+    // Split actions into a list. Assuming actions are separated by newlines or are numbered.
+    const actions = message.correctiveActions.split('\n').map(s => s.trim()).filter(s => s && !s.match(/^\d+\./)).map(s => s.replace(/^\-/, '').trim());
+
     return (
         <div className="space-y-4">
             <Card>
@@ -40,9 +53,9 @@ const AssistantMessage = ({ message }: { message: AIOperatorAssistantResponse })
             <Card>
                 <CardContent className="p-4">
                     <div className="flex items-start gap-3">
-                        <Info className="size-5 mt-1 text-primary" />
+                        <Info className="size-5 mt-1 text-yellow-400" />
                         <div>
-                            <h4 className="font-semibold">Anomaly Explanation</h4>
+                            <h4 className="font-semibold">Critical Conditions</h4>
                             <p className="text-sm text-muted-foreground">{message.anomalyExplanation}</p>
                         </div>
                     </div>
@@ -52,10 +65,20 @@ const AssistantMessage = ({ message }: { message: AIOperatorAssistantResponse })
             <Card>
                 <CardContent className="p-4">
                     <div className="flex items-start gap-3">
-                        <ShieldCheck className="size-5 mt-1 text-primary" />
+                        <ShieldCheck className="size-5 mt-1 text-green-400" />
                         <div>
-                            <h4 className="font-semibold">Corrective Actions</h4>
-                            <p className="text-sm text-muted-foreground">{message.correctiveActions}</p>
+                            <h4 className="font-semibold">Suggested Actions & Setpoints</h4>
+                            <div className="text-sm text-muted-foreground mt-2 space-y-3">
+                                {actions.map((action, index) => (
+                                    <div key={index} className="flex justify-between items-center bg-background/50 p-2 rounded-md">
+                                        <span>{action}</span>
+                                        <Button size="sm" variant="ghost" onClick={() => handleAutomate(action)} className="h-7">
+                                            <Play className="mr-2 size-3"/>
+                                            Automate
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </CardContent>
@@ -66,7 +89,7 @@ const AssistantMessage = ({ message }: { message: AIOperatorAssistantResponse })
                     <AccordionTrigger className="text-sm">
                         <div className="flex items-center gap-2">
                             <BrainCircuit className="size-4" />
-                            View Reasoning
+                            View AI Reasoning
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="text-xs text-muted-foreground p-2 bg-background/50 rounded-md">
@@ -83,7 +106,7 @@ export default function AIAssistant({ isOpen, onOpenChange, currentMetrics }: AI
     {
       id: "init",
       role: "assistant",
-      content: "Hello! I'm your AI Operator Assistant. Ask me for a status summary, or about any issues you're seeing."
+      content: "Hello! I'm your AI Operator Assistant. Ask me for a status summary, to check for issues, or suggest new setpoints."
     }
   ]);
   const [input, setInput] = useState("");
@@ -129,7 +152,7 @@ export default function AIAssistant({ isOpen, onOpenChange, currentMetrics }: AI
         <SheetHeader>
           <SheetTitle>AI Operator Assistant</SheetTitle>
           <SheetDescription>
-            Your AI partner for monitoring and managing kiln operations.
+            Your AI partner for operational guidance and automation.
           </SheetDescription>
         </SheetHeader>
         <div className="flex-1 overflow-hidden">
@@ -171,7 +194,7 @@ export default function AIAssistant({ isOpen, onOpenChange, currentMetrics }: AI
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="e.g., 'Summarize current status.'"
+              placeholder="e.g., 'Suggest new setpoints.'"
               disabled={isPending}
             />
             <Button type="submit" disabled={isPending || !input.trim()}>
