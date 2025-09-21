@@ -9,7 +9,7 @@ import {
   SidebarProvider,
 } from '@/components/ui/sidebar';
 import { KilnPulseLogo } from '@/components/icons/KilnPulseLogo';
-import { LayoutDashboard, Fuel, Component } from 'lucide-react';
+import { LayoutDashboard, Fuel, Component, LayoutGrid } from 'lucide-react';
 import Link from 'next/link';
 
 export default function RawMaterialPredictionLayout({
@@ -49,6 +49,14 @@ export default function RawMaterialPredictionLayout({
                 <Link href="/raw-material-prediction">
                   <Component />
                   <span>Raw Materials</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Visual Summary">
+                <Link href="/visual-summary">
+                  <LayoutGrid />
+                  <span>Visual Summary</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

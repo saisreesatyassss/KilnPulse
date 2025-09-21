@@ -12,7 +12,7 @@ import { KilnPulseLogo } from '@/components/icons/KilnPulseLogo';
 import { LayoutDashboard, Fuel, Component, LayoutGrid } from 'lucide-react';
 import Link from 'next/link';
 
-export default function FuelOptimizationLayout({
+export default function VisualSummaryLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -37,14 +37,14 @@ export default function FuelOptimizationLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Fuel Optimization" isActive>
+              <SidebarMenuButton asChild tooltip="Fuel Optimization">
                 <Link href="/fuel-optimization">
                   <Fuel />
                   <span>Fuel Optimization</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-             <SidebarMenuItem>
+            <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Raw Material Prediction">
                 <Link href="/raw-material-prediction">
                   <Component />
@@ -53,7 +53,7 @@ export default function FuelOptimizationLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Visual Summary">
+              <SidebarMenuButton asChild tooltip="Visual Summary" isActive>
                 <Link href="/visual-summary">
                   <LayoutGrid />
                   <span>Visual Summary</span>
