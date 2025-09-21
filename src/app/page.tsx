@@ -8,10 +8,12 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from '@/components/ui/sidebar';
-import KilnHeartbeatDashboard from '@/components/dashboard/KilnHeartbeatDashboard';
+
 import { KilnPulseLogo } from '@/components/icons/KilnPulseLogo';
 import { LayoutDashboard, Fuel } from 'lucide-react';
 import Link from 'next/link';
+import ClientDashboard from '@/components/dashboard/ClientDashboard';
+
 
 export default function Home() {
   return (
@@ -45,7 +47,7 @@ export default function Home() {
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
-        <KilnHeartbeatDashboard />
+        <ClientDashboard />
       </SidebarInset>
     </SidebarProvider>
   );
