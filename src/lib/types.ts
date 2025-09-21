@@ -52,3 +52,24 @@ export type OptimizationResult = {
     costSavings: number;
     reasoning: string;
 };
+
+
+export type RawMaterialInput = {
+  limestoneMoisture: number;
+  claySilicaContent: number;
+  ironOreContent: number;
+  currentGrindingRate: number;
+  currentKilnFeedRate: number;
+};
+
+export type RawMaterialPrediction = {
+  predictedMoisture: number;
+  predictedComposition: {
+    limeSaturation: number;
+    silicaModulus: number;
+    aluminaModulus: number;
+  };
+  recommendedGrindingRate: number;
+  recommendedKilnFeedRate: number;
+  reasoning: string;
+};

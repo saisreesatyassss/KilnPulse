@@ -9,7 +9,7 @@ import {
   SidebarProvider,
 } from '@/components/ui/sidebar';
 import { KilnPulseLogo } from '@/components/icons/KilnPulseLogo';
-import { LayoutDashboard, Fuel } from 'lucide-react';
+import { LayoutDashboard, Fuel, Component } from 'lucide-react';
 import Link from 'next/link';
 
 export default function FuelOptimizationLayout({
@@ -41,6 +41,14 @@ export default function FuelOptimizationLayout({
                 <Link href="/fuel-optimization">
                   <Fuel />
                   <span>Fuel Optimization</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Raw Material Prediction">
+                <Link href="/raw-material-prediction">
+                  <Component />
+                  <span>Raw Materials</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
