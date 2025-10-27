@@ -1,0 +1,77 @@
+/**
+ * @file Firestore Security Rules
+ * @description This ruleset defines access control for the KilnMetrics, Alerts, and ThresholdRules collections.
+ *
+ * Core Philosophy:
+ * This ruleset prioritizes authorization independence and assumes ThresholdRules are global. KilnMetrics, Alerts, and ThresholdRules collections are publicly readable, but write operations require authentication.
+ *
+ * Data Structure:
+ * - /kilnMetrics/{kilnMetricId}: Stores individual kiln metric records.
+ * - /alerts/{alertId}: Stores alerts triggered by exceeding threshold rules.
+ * - /thresholdRules/{thresholdRuleId}: Stores threshold rules that trigger alerts.
+ *
+ * Key Security Decisions:
+ * - KilnMetrics, Alerts and ThresholdRules are publicly readable (`get`, `list`).
+ * - All write operations (`create`, `update`, `delete`) require the user to be authenticated.
+ * - Data validation is minimal, focusing only on authorization and relational integrity.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Controls access to the KilnMetrics collection.
+     * @path /kilnMetrics/{kilnMetricId}
+     * @allow (get, list): Any user can read kiln metrics.
+     * @allow (create): Authenticated user can create kiln metrics.
+     * @deny (create): Unauthenticated user cannot create kiln metrics.
+     * @deny (update): Updating kiln metrics is not allowed.
+     * @deny (delete): Deleting kiln metrics is not allowed.
+     * @principle Allows public read access but restricts write access to authenticated users.
+     */
+    match /kilnMetrics/{kilnMetricId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Controls access to the Alerts collection.
+     * @path /alerts/{alertId}
+     * @allow (get, list): Any user can read alerts.
+     * @allow (create): Authenticated user can create alerts.
+     * @deny (create): Unauthenticated user cannot create alerts.
+     * @deny (update): Updating alerts is not allowed.
+     * @deny (delete): Deleting alerts is not allowed.
+     * @principle Allows public read access but restricts write access to authenticated users.
+     */
+    match /alerts/{alertId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Controls access to the ThresholdRules collection.
+     * @path /thresholdRules/{thresholdRuleId}
+     * @allow (get, list): Any user can read threshold rules.
+     * @allow (create): Authenticated user can create threshold rules.
+     * @deny (create): Unauthenticated user cannot create threshold rules.
+     * @deny (update): Updating threshold rules is not allowed.
+     * @deny (delete): Deleting threshold rules is not allowed.
+     * @principle Allows public read access but restricts write access to authenticated users.
+     */
+    match /thresholdRules/{thresholdRuleId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+
+  function isSignedIn() {
+    return request.auth != null;
+  }
+}
