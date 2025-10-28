@@ -73,3 +73,19 @@ export type RawMaterialPrediction = {
   recommendedKilnFeedRate: number;
   reasoning: string;
 };
+
+export type MaintenancePrediction = {
+  component: string;
+  prediction: string;
+  reason: string;
+  predictedFailureDate: string;
+};
+
+export type MaintenanceTask = {
+  id?: string;
+  component: string;
+  reason: string;
+  predictedFailureDate: string;
+  scheduledAt: string;
+  status: "Scheduled" | "In Progress" | "Completed" | "Cancelled";
+};

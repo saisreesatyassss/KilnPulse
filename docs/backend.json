@@ -110,6 +110,48 @@
         "lowerThreshold",
         "description"
       ]
+    },
+    "MaintenanceTask": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MaintenanceTask",
+      "type": "object",
+      "description": "Represents a maintenance task scheduled for a piece of equipment.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the maintenance task."
+        },
+        "component": {
+          "type": "string",
+          "description": "The name of the component that needs maintenance (e.g., 'Kiln Fan Motor')."
+        },
+        "reason": {
+          "type": "string",
+          "description": "The reason why maintenance is required (e.g., 'High vibration amplitude')."
+        },
+        "predictedFailureDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date when the failure is predicted to occur."
+        },
+        "scheduledAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the maintenance task was created."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Scheduled", "In Progress", "Completed", "Cancelled"],
+          "description": "The current status of the maintenance task."
+        }
+      },
+      "required": [
+        "component",
+        "reason",
+        "predictedFailureDate",
+        "scheduledAt",
+        "status"
+      ]
     }
   },
   "auth": {
@@ -167,8 +209,24 @@
             }
           ]
         }
+      },
+      {
+        "path": "/maintenanceTasks/{taskId}",
+        "definition": {
+          "entityName": "MaintenanceTask",
+          "schema": {
+            "$ref": "#/backend/entities/MaintenanceTask"
+          },
+          "description": "Stores maintenance tasks. `taskId` is the document ID.",
+          "params": [
+            {
+              "name": "taskId",
+              "description": "The unique identifier for the maintenance task document."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "The Firestore structure is designed to manage kiln metrics, alerts, and threshold rules. It prioritizes authorization independence and supports secure list operations. KilnMetrics, Alerts and ThresholdRules are top-level collections. Since the provided information does not discuss collaborative access, we can assume that ThresholdRules are global."
+    "reasoning": "The Firestore structure is designed to manage kiln metrics, alerts, and threshold rules. It prioritizes authorization independence and supports secure list operations. KilnMetrics, Alerts and ThresholdRules are top-level collections. Since the provided information does not discuss collaborative access, we can assume that ThresholdRules are global. MaintenanceTasks are added as a new top-level collection to manage scheduled work."
   }
 }

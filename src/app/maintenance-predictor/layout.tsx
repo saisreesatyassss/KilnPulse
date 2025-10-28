@@ -1,23 +1,22 @@
-"use client";
-
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarInset,
-  SidebarProvider,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarProvider,
 } from '@/components/ui/sidebar';
-
 import { KilnPulseLogo } from '@/components/icons/KilnPulseLogo';
 import { LayoutDashboard, Fuel, Component, LayoutGrid, Wrench } from 'lucide-react';
 import Link from 'next/link';
-import ClientDashboard from '@/components/dashboard/ClientDashboard';
 
-
-export default function Home() {
+export default function MaintenancePredictorLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <SidebarProvider>
       <Sidebar side="left" collapsible="icon" className="border-r">
@@ -30,7 +29,7 @@ export default function Home() {
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Dashboard" isActive>
+              <SidebarMenuButton asChild tooltip="Dashboard">
                 <Link href="/">
                   <LayoutDashboard />
                   <span>Dashboard</span>
@@ -53,8 +52,8 @@ export default function Home() {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Maintenance Predictor">
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Maintenance Predictor" isActive>
                 <Link href="/maintenance-predictor">
                   <Wrench />
                   <span>Maintenance</span>
@@ -72,9 +71,7 @@ export default function Home() {
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
-      <SidebarInset>
-        <ClientDashboard />
-      </SidebarInset>
+      <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );
 }
