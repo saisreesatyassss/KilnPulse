@@ -152,6 +152,46 @@
         "scheduledAt",
         "status"
       ]
+    },
+    "InsightEvent": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "InsightEvent",
+      "type": "object",
+      "description": "Represents a single AI-driven event for the insight timeline.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the event."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the event occurred."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["alert", "suggestion", "simulation"],
+          "description": "The type of insight event."
+        },
+        "title": {
+          "type": "string",
+          "description": "A short, descriptive title for the event."
+        },
+        "description": {
+          "type": "string",
+          "description": "A more detailed description of the event or its outcome."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Optional metadata associated with the event (e.g., confidence scores, simulation results)."
+        }
+      },
+      "required": [
+        "timestamp",
+        "type",
+        "title",
+        "description"
+      ]
     }
   },
   "auth": {
@@ -225,8 +265,24 @@
             }
           ]
         }
+      },
+      {
+        "path": "/insightEvents/{eventId}",
+        "definition": {
+          "entityName": "InsightEvent",
+          "schema": {
+            "$ref": "#/backend/entities/InsightEvent"
+          },
+          "description": "Stores a log of AI-driven events for the timeline. `eventId` is the document ID.",
+          "params": [
+            {
+              "name": "eventId",
+              "description": "The unique identifier for the insight event document."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "The Firestore structure is designed to manage kiln metrics, alerts, and threshold rules. It prioritizes authorization independence and supports secure list operations. KilnMetrics, Alerts and ThresholdRules are top-level collections. Since the provided information does not discuss collaborative access, we can assume that ThresholdRules are global. MaintenanceTasks are added as a new top-level collection to manage scheduled work."
+    "reasoning": "The Firestore structure is designed to manage kiln metrics, alerts, and threshold rules. It prioritizes authorization independence and supports secure list operations. KilnMetrics, Alerts and ThresholdRules are top-level collections. Since the provided information does not discuss collaborative access, we can assume that ThresholdRules are global. MaintenanceTasks are added as a new top-level collection to manage scheduled work. A new `insightEvents` collection is added to log AI-driven actions and alerts for display on a timeline."
   }
 }

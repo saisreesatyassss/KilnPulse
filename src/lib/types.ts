@@ -105,3 +105,12 @@ export type ActionSimulationResult = {
   };
   reasoning: string;
 };
+
+export type InsightEvent = {
+  id: string;
+  timestamp: string;
+  type: "alert" | "suggestion" | "simulation";
+  title: string;
+  description: string;
+  metadata?: Record<string, any>;
+};

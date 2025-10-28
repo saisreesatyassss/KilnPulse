@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { DataPoint, Alert, KilnData } from '@/lib/types';
-import { getAlertExplanationAction } from '@/lib/actions';
+import { getAlertExplanationAction, logInsightEventAction } from '@/lib/actions';
 import { useToast } from './use-toast';
 import { format } from 'date-fns';
 
@@ -80,6 +80,19 @@ export const useKilnData = () => {
         variant: "destructive",
         title: `🚨 ${metric} Alert`,
         description: ruleDescription,
+    });
+
+    // Log the insight event
+    logInsightEventAction({
+        type: 'alert',
+        title: `Predicted ${metric} Anomaly`,
+        description: `Confidence: ${(explanationResult.confidenceScore * 100).toFixed(0)}%`,
+        metadata: {
+            metric,
+            currentValue,
+            threshold,
+            confidence: explanationResult.confidenceScore,
+        }
     });
   }, [alerts, toast]);
 

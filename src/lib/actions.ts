@@ -10,7 +10,7 @@ import { simulateActionImpact, ActionSimulatorInput } from "@/ai/flows/action-si
 import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { collection, getFirestore } from "firebase/firestore";
 import { initializeFirebase } from "@/firebase";
-import { MaintenanceTask } from "./types";
+import { MaintenanceTask, InsightEvent } from "./types";
 
 export async function getAlertExplanationAction(input: AlertExplanationInput) {
   return await generateAlertExplanation(input);
@@ -57,5 +57,23 @@ export async function scheduleMaintenanceAction(task: Omit<MaintenanceTask, 'id'
         console.error("Error scheduling maintenance task:", error);
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
         return { success: false, message: `Failed to schedule maintenance task: ${errorMessage}` };
+    }
+}
+
+export async function logInsightEventAction(event: Omit<InsightEvent, 'id' | 'timestamp'>) {
+    const { firestore } = initializeFirebase();
+    const eventsCollection = collection(firestore, 'insightEvents');
+
+    const newEvent: Omit<InsightEvent, 'id'> = {
+        ...event,
+        timestamp: new Date().toISOString(),
+    };
+    
+    try {
+        addDocumentNonBlocking(eventsCollection, newEvent);
+    } catch (error) {
+        // This is a background logging task, so we'll just log the error
+        // without throwing or returning a response to the client.
+        console.error("Error logging insight event:", error);
     }
 }
