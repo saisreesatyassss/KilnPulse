@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/sidebar';
 
 import { KilnPulseLogo } from '@/components/icons/KilnPulseLogo';
-import { LayoutDashboard, Fuel, Component, LayoutGrid, Wrench } from 'lucide-react';
+import { LayoutDashboard, Fuel, Component, LayoutGrid, Wrench, BarChartHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import ClientDashboard from '@/components/dashboard/ClientDashboard';
 
@@ -68,6 +68,14 @@ export default function Home() {
                   <span>Visual Summary</span>
                 </Link>
               </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Impact Tracker">
+                    <Link href="/impact-tracker">
+                        <BarChartHorizontal />
+                        <span>Impact Tracker</span>
+                    </Link>
+                </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>

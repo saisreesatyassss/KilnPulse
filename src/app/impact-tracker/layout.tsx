@@ -12,7 +12,7 @@ import { KilnPulseLogo } from '@/components/icons/KilnPulseLogo';
 import { LayoutDashboard, Fuel, Component, LayoutGrid, Wrench, BarChartHorizontal } from 'lucide-react';
 import Link from 'next/link';
 
-export default function FuelOptimizationLayout({
+export default function ImpactTrackerLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -37,14 +37,14 @@ export default function FuelOptimizationLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Fuel Optimization" isActive>
+              <SidebarMenuButton asChild tooltip="Fuel Optimization">
                 <Link href="/fuel-optimization">
                   <Fuel />
                   <span>Fuel Optimization</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-             <SidebarMenuItem>
+            <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Raw Material Prediction">
                 <Link href="/raw-material-prediction">
                   <Component />
@@ -52,7 +52,7 @@ export default function FuelOptimizationLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
+             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Maintenance Predictor">
                 <Link href="/maintenance-predictor">
                   <Wrench />
@@ -69,7 +69,7 @@ export default function FuelOptimizationLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Impact Tracker">
+                <SidebarMenuButton asChild tooltip="Impact Tracker" isActive>
                     <Link href="/impact-tracker">
                         <BarChartHorizontal />
                         <span>Impact Tracker</span>
