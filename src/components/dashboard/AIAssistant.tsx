@@ -6,35 +6,33 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Bot, User, Loader2, Info, Activity, ShieldCheck, BrainCircuit, Play } from 'lucide-react';
+import { Bot, User, Loader2, Info, Activity, ShieldCheck, BrainCircuit, Play, TestTube } from 'lucide-react';
 import { getAIAssistantResponseAction } from "@/lib/actions";
-import type { Message, AIOperatorAssistantResponse } from "@/lib/types";
+import type { Message, AIOperatorAssistantResponse, ActionSimulationResult, KilnMetrics } from "@/lib/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import ActionSimulatorDialog from "./ActionSimulatorDialog";
 
 type AIAssistantProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  currentMetrics: {
-    temperature: number;
-    oxygenLevel: number;
-    energyConsumption: number;
-  };
+  currentMetrics: KilnMetrics;
 };
 
-const AssistantMessage = ({ message }: { message: AIOperatorAssistantResponse }) => {
+const AssistantMessage = ({ message, currentMetrics }: { message: AIOperatorAssistantResponse, currentMetrics: KilnMetrics }) => {
     const { toast } = useToast();
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedAction, setSelectedAction] = useState<string | null>(null);
+    const [simulationResult, setSimulationResult] = useState<ActionSimulationResult | null>(null);
 
-    const handleAutomate = (action: string) => {
-        toast({
-            title: "Automation Task Started",
-            description: `Executing: "${action}"`
-        });
+    const handleSimulate = (action: string) => {
+        setSelectedAction(action);
+        setDialogOpen(true);
     };
     
     // Split actions into a list. Assuming actions are separated by newlines or are numbered.
-    const actions = message.correctiveActions.split('\n').map(s => s.trim()).filter(s => s && !s.match(/^\d+\./)).map(s => s.replace(/^\-/, '').trim());
+    const actions = message.correctiveActions.split('\n').map(s => s.trim()).filter(s => s && !s.match(/^\d+\./)).map(s => s.replace(/^-/, '').trim());
 
     return (
         <div className="space-y-4">
@@ -72,9 +70,9 @@ const AssistantMessage = ({ message }: { message: AIOperatorAssistantResponse })
                                 {actions.map((action, index) => (
                                     <div key={index} className="flex justify-between items-center bg-background/50 p-2 rounded-md">
                                         <span>{action}</span>
-                                        <Button size="sm" variant="ghost" onClick={() => handleAutomate(action)} className="h-7">
-                                            <Play className="mr-2 size-3"/>
-                                            Automate
+                                        <Button size="sm" variant="ghost" onClick={() => handleSimulate(action)} className="h-7">
+                                            <TestTube className="mr-2 size-3"/>
+                                            Simulate
                                         </Button>
                                     </div>
                                 ))}
@@ -97,6 +95,15 @@ const AssistantMessage = ({ message }: { message: AIOperatorAssistantResponse })
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>
+            
+            {selectedAction && (
+                <ActionSimulatorDialog
+                    isOpen={dialogOpen}
+                    onOpenChange={setDialogOpen}
+                    action={selectedAction}
+                    currentMetrics={currentMetrics}
+                />
+            )}
         </div>
     )
 }
@@ -166,7 +173,7 @@ export default function AIAssistant({ isOpen, onOpenChange, currentMetrics }: AI
                     </Avatar>
                   )}
                   <div className={`rounded-lg px-4 py-2 max-w-[80%] ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary'}`}>
-                    {typeof message.content === 'string' ? <p>{message.content}</p> : <AssistantMessage message={message.content} />}
+                    {typeof message.content === 'string' ? <p>{message.content}</p> : <AssistantMessage message={message.content} currentMetrics={currentMetrics} />}
                   </div>
                   {message.role === 'user' && (
                     <Avatar className="w-8 h-8">

@@ -9,6 +9,12 @@ export type KilnData = {
   energy: DataPoint[];
 };
 
+export type KilnMetrics = {
+    temperature: number;
+    oxygenLevel: number;
+    energyConsumption: number;
+}
+
 export type Alert = {
   id: string;
   metric: 'Temperature' | 'Oxygen' | 'Energy';
@@ -88,4 +94,14 @@ export type MaintenanceTask = {
   predictedFailureDate: string;
   scheduledAt: string;
   status: "Scheduled" | "In Progress" | "Completed" | "Cancelled";
+};
+
+export type ActionSimulationResult = {
+  projectedEffects: {
+    energyChange: number;
+    qualityImpact: string;
+    co2Change: number;
+    costChange: number;
+  };
+  reasoning: string;
 };

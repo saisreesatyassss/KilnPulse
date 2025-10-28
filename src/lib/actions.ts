@@ -6,6 +6,7 @@ import { optimizeFuelMix, FuelMixInput } from "@/ai/flows/fuel-optimizer";
 import { predictRawMaterial, RawMaterialInput } from "@/ai/flows/raw-material-predictor";
 import { generateVisualSummary, VisualSummaryInput } from "@/ai/flows/visual-process-summary";
 import { predictMaintenance, MaintenancePredictionInput } from "@/ai/flows/maintenance-predictor";
+import { simulateActionImpact, ActionSimulatorInput } from "@/ai/flows/action-simulator";
 import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { collection, getFirestore } from "firebase/firestore";
 import { initializeFirebase } from "@/firebase";
@@ -33,6 +34,10 @@ export async function generateVisualSummaryAction(input: VisualSummaryInput) {
 
 export async function predictMaintenanceAction(input: MaintenancePredictionInput) {
     return await predictMaintenance(input);
+}
+
+export async function simulateActionImpactAction(input: ActionSimulatorInput) {
+    return await simulateActionImpact(input);
 }
 
 export async function scheduleMaintenanceAction(task: Omit<MaintenanceTask, 'id' | 'scheduledAt' | 'status'>) {
