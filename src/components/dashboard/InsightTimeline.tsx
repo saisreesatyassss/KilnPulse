@@ -65,16 +65,17 @@ function TimelineSkeleton() {
 }
 
 export default function InsightTimeline() {
-  const { firestore } = useFirebase();
+  const { firestore, isUserLoading } = useFirebase();
   
   const eventsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
+    // Wait for firestore to be available and for user auth state to be resolved.
+    if (!firestore || isUserLoading) return null;
     return query(
         collection(firestore, "insightEvents"), 
         orderBy("timestamp", "desc"), 
         limit(15)
     );
-  }, [firestore]);
+  }, [firestore, isUserLoading]);
   
   const { data: events, isLoading } = useCollection<InsightEvent>(eventsQuery);
 
@@ -87,15 +88,15 @@ export default function InsightTimeline() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {isLoading && <TimelineSkeleton />}
-        {!isLoading && events && events.length > 0 && (
+        {(isLoading || isUserLoading) && <TimelineSkeleton />}
+        {!isLoading && !isUserLoading && events && events.length > 0 && (
             <ol className="relative border-s border-border max-h-[80vh] overflow-y-auto pr-2">                  
                 {events.map(event => (
                     <TimelineItem key={event.id} event={event} />
                 ))}
             </ol>
         )}
-        {!isLoading && (!events || events.length === 0) && (
+        {!isLoading && !isUserLoading && (!events || events.length === 0) && (
             <div className="text-center text-muted-foreground py-10">
                 <p>No AI insights logged yet.</p>
                 <p className="text-xs">Trigger an anomaly or use the AI assistant to see events here.</p>
