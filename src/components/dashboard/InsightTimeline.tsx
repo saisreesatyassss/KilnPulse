@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo } from 'react';
@@ -65,17 +66,17 @@ function TimelineSkeleton() {
 }
 
 export default function InsightTimeline() {
-  const { firestore, isUserLoading } = useFirebase();
+  const { firestore, user, isUserLoading } = useFirebase();
   
   const eventsQuery = useMemoFirebase(() => {
-    // Wait for firestore to be available and for user auth state to be resolved.
-    if (!firestore || isUserLoading) return null;
+    // Wait for firestore to be available and for an authenticated user to be present.
+    if (!firestore || !user) return null;
     return query(
         collection(firestore, "insightEvents"), 
         orderBy("timestamp", "desc"), 
         limit(15)
     );
-  }, [firestore, isUserLoading]);
+  }, [firestore, user]);
   
   const { data: events, isLoading } = useCollection<InsightEvent>(eventsQuery);
 
