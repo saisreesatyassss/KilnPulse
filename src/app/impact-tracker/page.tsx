@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useKilnData } from '@/hooks/useKilnData';
 import { TrendingUp, TrendingDown, Zap, Leaf, ShieldCheck, DollarSign } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // --- Simulated Baseline Data (Before AI) ---
 const baselineMetrics = {
@@ -42,11 +43,32 @@ function ImpactKpiCard({ title, icon, unit, before, after, higherIsBetter = fals
     );
 }
 
+function ImpactTrackerSkeleton() {
+    return (
+        <div className="grid gap-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Performance: AI-Active vs. Baseline</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-[300px] w-full" />
+                </CardContent>
+            </Card>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <Skeleton className="h-28" />
+                <Skeleton className="h-28" />
+                <Skeleton className="h-28" />
+                <Skeleton className="h-28" />
+            </div>
+        </div>
+    );
+}
+
 export default function ImpactTrackerPage() {
-    const { kilnData } = useKilnData();
+    const { kilnData, isLoading } = useKilnData();
 
     // Use the latest 'live' data as the "After AI" state
-    const currentEnergy = kilnData.energy[kilnData.energy.length - 1]?.value ?? baselineMetrics.energy;
+    const currentEnergy = kilnData?.energy[kilnData.energy.length - 1]?.value ?? baselineMetrics.energy;
     
     // Simulate other "After AI" metrics based on energy consumption for a dynamic effect
     const energyImprovementFactor = (baselineMetrics.energy - currentEnergy) / baselineMetrics.energy;
@@ -68,62 +90,66 @@ export default function ImpactTrackerPage() {
             </header>
 
             <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-                <div className="grid gap-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Performance: AI-Active vs. Baseline</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={chartData}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: 'hsl(var(--background))',
-                                            border: '1px solid hsl(var(--border))',
-                                        }}
-                                    />
-                                    <Legend />
-                                    <Bar dataKey="Before" fill="hsl(var(--chart-5))" radius={[4, 4, 0, 0]} />
-                                    <Bar dataKey="After" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
+                {isLoading ? (
+                    <ImpactTrackerSkeleton />
+                ) : (
+                    <div className="grid gap-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Performance: AI-Active vs. Baseline</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart data={chartData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                        <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: 'hsl(var(--background))',
+                                                border: '1px solid hsl(var(--border))',
+                                            }}
+                                        />
+                                        <Legend />
+                                        <Bar dataKey="Before" fill="hsl(var(--chart-5))" radius={[4, 4, 0, 0]} />
+                                        <Bar dataKey="After" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
 
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                        <ImpactKpiCard
-                            title="Energy Consumption"
-                            icon={<Zap className="h-4 w-4 text-muted-foreground" />}
-                            unit=" kWh"
-                            before={baselineMetrics.energy}
-                            after={currentEnergy}
-                        />
-                        <ImpactKpiCard
-                            title="CO₂ Footprint"
-                            icon={<Leaf className="h-4 w-4 text-muted-foreground" />}
-                            unit=" t/TJ"
-                            before={baselineMetrics.co2}
-                            after={currentCo2}
-                        />
-                        <ImpactKpiCard
-                            title="Quality Variance"
-                            icon={<ShieldCheck className="h-4 w-4 text-muted-foreground" />}
-                            unit="%"
-                            before={baselineMetrics.qualityVariance * 100}
-                            after={currentQualityVariance * 100}
-                        />
-                        <ImpactKpiCard
-                            title="Operational Cost"
-                            icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
-                            unit="/ton"
-                            before={baselineMetrics.cost}
-                            after={currentCost}
-                        />
+                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                            <ImpactKpiCard
+                                title="Energy Consumption"
+                                icon={<Zap className="h-4 w-4 text-muted-foreground" />}
+                                unit=" kWh"
+                                before={baselineMetrics.energy}
+                                after={currentEnergy}
+                            />
+                            <ImpactKpiCard
+                                title="CO₂ Footprint"
+                                icon={<Leaf className="h-4 w-4 text-muted-foreground" />}
+                                unit=" t/TJ"
+                                before={baselineMetrics.co2}
+                                after={currentCo2}
+                            />
+                            <ImpactKpiCard
+                                title="Quality Variance"
+                                icon={<ShieldCheck className="h-4 w-4 text-muted-foreground" />}
+                                unit="%"
+                                before={baselineMetrics.qualityVariance * 100}
+                                after={currentQualityVariance * 100}
+                            />
+                            <ImpactKpiCard
+                                title="Operational Cost"
+                                icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
+                                unit="/ton"
+                                before={baselineMetrics.cost}
+                                after={currentCost}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
             </main>
         </div>
     );

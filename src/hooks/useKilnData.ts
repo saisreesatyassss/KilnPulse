@@ -39,14 +39,21 @@ const generateInitialData = (range: {min: number, max: number}): DataPoint[] => 
 
 export const useKilnData = () => {
   const { toast } = useToast();
-  const [kilnData, setKilnData] = useState<KilnData>({
-    temperature: generateInitialData(NORMAL_TEMP_RANGE),
-    oxygen: generateInitialData(NORMAL_OXYGEN_RANGE),
-    energy: generateInitialData(NORMAL_ENERGY_RANGE),
-  });
+  const [kilnData, setKilnData] = useState<KilnData | null>(null);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isAnomaly, setIsAnomaly] = useState(false);
   const anomalyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Generate initial data on the client side only
+    setKilnData({
+        temperature: generateInitialData(NORMAL_TEMP_RANGE),
+        oxygen: generateInitialData(NORMAL_OXYGEN_RANGE),
+        energy: generateInitialData(NORMAL_ENERGY_RANGE),
+    });
+    setIsLoading(false);
+  }, []);
 
   const addAlert = useCallback(async (metric: 'Temperature' | 'Oxygen' | 'Energy', currentValue: number, threshold: number, ruleDescription: string) => {
     const newAlertId = `${metric}-${Date.now()}`;
@@ -119,8 +126,12 @@ export const useKilnData = () => {
 
 
   useEffect(() => {
+    if(isLoading) return;
+
     const interval = setInterval(() => {
       setKilnData(prevData => {
+        if (!prevData) return null;
+
         const now = new Date();
         const time = format(now, 'HH:mm:ss');
         
@@ -165,7 +176,7 @@ export const useKilnData = () => {
             clearTimeout(anomalyTimeoutRef.current);
         }
     };
-  }, [isAnomaly, addAlert]);
+  }, [isAnomaly, addAlert, isLoading]);
 
-  return { kilnData, alerts, simulateAnomaly };
+  return { kilnData, alerts, simulateAnomaly, isLoading };
 };
