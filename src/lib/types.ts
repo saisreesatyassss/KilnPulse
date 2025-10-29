@@ -114,3 +114,12 @@ export type InsightEvent = {
   description: string;
   metadata?: Record<string, any>;
 };
+
+export type ActionFeedback = {
+    id: string;
+    timestamp: string;
+    action: string;
+    feedback: 'applied' | 'rejected';
+    reason?: string; // Optional, for future use
+    simulationResult: ActionSimulationResult;
+};

@@ -1,11 +1,10 @@
-"use client";
+'use client';
 
 import { useState, useTransition, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Loader2, Zap, Leaf, ShieldCheck, DollarSign, BrainCircuit, ArrowDown, ArrowUp, Minus } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { simulateActionImpactAction } from '@/lib/actions';
+import { Loader2, Zap, Leaf, ShieldCheck, DollarSign, BrainCircuit, ArrowDown, ArrowUp, Minus, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { simulateActionImpactAction, logActionFeedbackAction } from '@/lib/actions';
 import type { ActionSimulationResult, KilnMetrics } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -42,13 +41,14 @@ const KpiChangeCard = ({ icon, title, value, unit }: { icon: React.ReactNode, ti
 
 export default function ActionSimulatorDialog({ isOpen, onOpenChange, action, currentMetrics }: ActionSimulatorDialogProps) {
     const { toast } = useToast();
-    const [isPending, startTransition] = useTransition();
+    const [isSimulating, startSimulationTransition] = useTransition();
+    const [isLoggingFeedback, startLoggingFeedbackTransition] = useTransition();
     const [result, setResult] = useState<ActionSimulationResult | null>(null);
 
     useEffect(() => {
         if (isOpen) {
             setResult(null); // Reset on open
-            startTransition(async () => {
+            startSimulationTransition(async () => {
                 const response = await simulateActionImpactAction({
                     action,
                     currentMetrics,
@@ -58,19 +58,25 @@ export default function ActionSimulatorDialog({ isOpen, onOpenChange, action, cu
         }
     }, [isOpen, action, currentMetrics]);
     
-    const handleApplyRecommendation = () => {
-        toast({
-            title: "Action Applied",
-            description: `Successfully applied: "${action}"`,
+    const handleFeedback = (feedback: 'applied' | 'rejected') => {
+        if (!result) return;
+        
+        startLoggingFeedbackTransition(async () => {
+            await logActionFeedbackAction({
+                action,
+                feedback,
+                simulationResult: result,
+            });
+
+            toast({
+                title: `Action ${feedback === 'applied' ? 'Applied' : 'Rejected'}`,
+                description: `Your feedback for "${action}" has been logged.`,
+            });
+            onOpenChange(false);
         });
-        onOpenChange(false);
     };
 
-    const chartData = result ? [
-        { name: 'Energy', change: result.projectedEffects.energyChange },
-        { name: 'CO₂', change: result.projectedEffects.co2Change },
-        { name: 'Cost', change: result.projectedEffects.costChange },
-    ] : [];
+    const isPending = isSimulating || isLoggingFeedback;
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -82,7 +88,7 @@ export default function ActionSimulatorDialog({ isOpen, onOpenChange, action, cu
                     </DialogDescription>
                 </DialogHeader>
                 
-                {isPending && !result && (
+                {isSimulating && !result && (
                      <div className="space-y-4 py-8">
                         <div className="flex items-center justify-center gap-2 text-muted-foreground">
                             <Loader2 className="animate-spin" />
@@ -126,10 +132,17 @@ export default function ActionSimulatorDialog({ isOpen, onOpenChange, action, cu
                 )}
                 
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-                    <Button onClick={handleApplyRecommendation} disabled={isPending || !result}>
-                        Apply Recommendation
-                    </Button>
+                    <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={isPending}>Cancel</Button>
+                    <div className='flex gap-2'>
+                        <Button variant="destructive" onClick={() => handleFeedback('rejected')} disabled={isPending || !result}>
+                            {isLoggingFeedback ? <Loader2 className="animate-spin" /> : <ThumbsDown />}
+                            Reject
+                        </Button>
+                        <Button variant="default" onClick={() => handleFeedback('applied')} disabled={isPending || !result}>
+                            {isLoggingFeedback ? <Loader2 className="animate-spin" /> : <ThumbsUp />}
+                            Apply & Log
+                        </Button>
+                    </div>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

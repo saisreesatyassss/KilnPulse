@@ -192,6 +192,41 @@
         "title",
         "description"
       ]
+    },
+    "ActionFeedback": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ActionFeedback",
+      "type": "object",
+      "description": "Logs operator feedback on AI-suggested actions to enable adaptive learning.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the feedback entry."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the feedback was logged."
+        },
+        "action": {
+          "type": "string",
+          "description": "The AI-suggested action that was reviewed by the operator."
+        },
+        "feedback": {
+          "type": "string",
+          "enum": ["applied", "rejected"],
+          "description": "The operator's decision on the suggested action."
+        },
+        "reason": {
+            "type": "string",
+            "description": "Optional user-provided reasoning for their decision."
+        },
+        "simulationResult": {
+            "type": "object",
+            "description": "The projected simulation outcomes that were shown to the operator."
+        }
+      },
+      "required": ["timestamp", "action", "feedback", "simulationResult"]
     }
   },
   "auth": {
@@ -281,8 +316,24 @@
             }
           ]
         }
+      },
+      {
+        "path": "/actionFeedback/{feedbackId}",
+        "definition": {
+          "entityName": "ActionFeedback",
+          "schema": {
+            "$ref": "#/backend/entities/ActionFeedback"
+          },
+          "description": "Stores operator feedback on AI actions for adaptive learning. `feedbackId` is the document ID.",
+          "params": [
+            {
+              "name": "feedbackId",
+              "description": "The unique identifier for the feedback document."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "The Firestore structure is designed to manage kiln metrics, alerts, and threshold rules. It prioritizes authorization independence and supports secure list operations. KilnMetrics, Alerts and ThresholdRules are top-level collections. Since the provided information does not discuss collaborative access, we can assume that ThresholdRules are global. MaintenanceTasks are added as a new top-level collection to manage scheduled work. A new `insightEvents` collection is added to log AI-driven actions and alerts for display on a timeline."
+    "reasoning": "The Firestore structure is designed to manage kiln metrics, alerts, and threshold rules. It prioritizes authorization independence and supports secure list operations. KilnMetrics, Alerts and ThresholdRules are top-level collections. Since the provided information does not discuss collaborative access, we can assume that ThresholdRules are global. MaintenanceTasks are added as a new top-level collection to manage scheduled work. A new `insightEvents` collection is added to log AI-driven actions and alerts for display on a timeline. A new `actionFeedback` collection is added to log operator feedback on AI suggestions, which enables the adaptive learning engine."
   }
 }
