@@ -8,3 +8,6 @@ import '@/ai/flows/raw-material-predictor.ts';
 import '@/ai/flows/visual-process-summary.ts';
 import '@/ai/flows/maintenance-predictor.ts';
 import '@/ai/flows/action-simulator.ts';
+import '@/ai/flows/safety-compliance-flow.ts';
+import '@/ai/flows/operator-log-flow.ts';
+import '@/ai/flows/energy-cost-flow.ts';

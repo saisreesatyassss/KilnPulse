@@ -7,6 +7,9 @@ import { predictRawMaterial, RawMaterialInput } from '@/ai/flows/raw-material-pr
 import { generateVisualSummary, VisualSummaryInput } from '@/ai/flows/visual-process-summary';
 import { predictMaintenance, MaintenancePredictionInput } from '@/ai/flows/maintenance-predictor';
 import { simulateActionImpact, ActionSimulatorInput } from '@/ai/flows/action-simulator';
+import { getSafetySummary, SafetySummaryInput } from '@/ai/flows/safety-compliance-flow';
+import { analyzeLogEntry, OperatorLogInput } from '@/ai/flows/operator-log-flow';
+import { getEnergyCostInsight, EnergyCostInput } from '@/ai/flows/energy-cost-flow';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection, getFirestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
@@ -95,4 +98,16 @@ export async function logActionFeedbackAction(feedback: Omit<ActionFeedback, 'id
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     return { success: false, message: `Failed to log feedback: ${errorMessage}` };
   }
+}
+
+export async function getSafetySummaryAction(input: SafetySummaryInput) {
+  return await getSafetySummary(input);
+}
+
+export async function analyzeLogEntryAction(input: OperatorLogInput) {
+  return await analyzeLogEntry(input);
+}
+
+export async function getEnergyCostInsightAction(input: EnergyCostInput) {
+    return await getEnergyCostInsight(input);
 }

@@ -12,7 +12,7 @@ import { KilnPulseLogo } from '@/components/icons/KilnPulseLogo';
 import { LayoutDashboard, Fuel, Component, LayoutGrid, Wrench, BarChartHorizontal, ShieldCheck, BookUser, AreaChart } from 'lucide-react';
 import Link from 'next/link';
 
-export default function VisualSummaryLayout({
+export default function SafetyComplianceLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -44,7 +44,7 @@ export default function VisualSummaryLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
+             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Raw Material Prediction">
                 <Link href="/raw-material-prediction">
                   <Component />
@@ -52,7 +52,7 @@ export default function VisualSummaryLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-             <SidebarMenuItem>
+            <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Maintenance Predictor">
                 <Link href="/maintenance-predictor">
                   <Wrench />
@@ -61,7 +61,7 @@ export default function VisualSummaryLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Visual Summary" isActive>
+              <SidebarMenuButton asChild tooltip="Visual Summary">
                 <Link href="/visual-summary">
                   <LayoutGrid />
                   <span>Visual Summary</span>
@@ -69,7 +69,7 @@ export default function VisualSummaryLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Safety Compliance">
+                <SidebarMenuButton asChild tooltip="Safety Compliance" isActive>
                     <Link href="/safety-compliance">
                         <ShieldCheck />
                         <span>Safety</span>

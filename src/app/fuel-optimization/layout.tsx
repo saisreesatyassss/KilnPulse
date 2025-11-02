@@ -9,7 +9,7 @@ import {
   SidebarProvider,
 } from '@/components/ui/sidebar';
 import { KilnPulseLogo } from '@/components/icons/KilnPulseLogo';
-import { LayoutDashboard, Fuel, Component, LayoutGrid, Wrench, BarChartHorizontal } from 'lucide-react';
+import { LayoutDashboard, Fuel, Component, LayoutGrid, Wrench, BarChartHorizontal, ShieldCheck, BookUser, AreaChart } from 'lucide-react';
 import Link from 'next/link';
 
 export default function FuelOptimizationLayout({
@@ -67,6 +67,30 @@ export default function FuelOptimizationLayout({
                   <span>Visual Summary</span>
                 </Link>
               </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Safety Compliance">
+                    <Link href="/safety-compliance">
+                        <ShieldCheck />
+                        <span>Safety</span>
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Operator Logbook">
+                    <Link href="/operator-logbook">
+                        <BookUser />
+                        <span>Logbook</span>
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Energy Cost Analysis">
+                    <Link href="/energy-cost-analysis">
+                        <AreaChart />
+                        <span>Energy Costs</span>
+                    </Link>
+                </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="Impact Tracker">
