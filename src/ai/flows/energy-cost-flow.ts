@@ -26,29 +26,12 @@ export async function getEnergyCostInsight(input: EnergyCostInput): Promise<Ener
   return energyCostFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'energyCostPrompt',
-  input: { schema: EnergyCostInputSchema },
-  output: { schema: EnergyCostOutputSchema },
-  prompt: `You are an energy cost analyst AI for a cement plant. Based on the following weekly cost data (JSON format), provide a key insight and a specific, actionable recommendation.
 
-Weekly Cost Data:
-{{{costData}}}
-
-Example Insight: "The cost of Petcoke has increased by 15% this week, contributing significantly to the overall energy cost rise."
-Example Recommendation: "Consider increasing the proportion of Biomass in the fuel mix by 5% to offset the rising Petcoke prices, if operational constraints allow."
-
-Generate a plausible insight and recommendation.`,
-});
-
-const energyCostFlow = ai.defineFlow(
-  {
-    name: 'energyCostFlow',
-    inputSchema: EnergyCostInputSchema,
-    outputSchema: EnergyCostOutputSchema,
-  },
-  async (input) => {
-    const { output } = await prompt(input);
-    return output!;
-  }
-);
+const energyCostFlow = async (input: EnergyCostInput): Promise<EnergyCostOutput> => {
+    // Return static data for demo purposes
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+    return {
+        insight: "The cost of Petcoke has surged by over 20% this week, becoming the primary driver of the total energy cost increase.",
+        recommendation: "Consider increasing the proportion of Biomass in the fuel mix by up to 5% to offset the rising Petcoke prices, if operational constraints on ash content and calorific value allow."
+    };
+}

@@ -26,25 +26,22 @@ export async function getSafetySummary(input: SafetySummaryInput): Promise<Safet
   return safetyComplianceFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'safetyCompliancePrompt',
-  input: { schema: SafetySummaryInputSchema },
-  output: { schema: SafetySummaryOutputSchema },
-  prompt: `You are a plant safety officer AI. Based on a set of mock safety logs for a cement plant, provide a concise summary and recommendations for the given timeframe: {{{timeframe}}}.
-
-Example: For a weekly report, you might say "One minor incident reported in the preheater section, related to improper use of PPE. Overall compliance remains at 98%. Recommendation: Schedule a mandatory PPE refresher training for all staff in that section."
-
-Generate a plausible summary and a set of actionable recommendations.`,
-});
-
-const safetyComplianceFlow = ai.defineFlow(
-  {
-    name: 'safetyComplianceFlow',
-    inputSchema: SafetySummaryInputSchema,
-    outputSchema: SafetySummaryOutputSchema,
-  },
-  async (input) => {
-    const { output } = await prompt(input);
-    return output!;
-  }
-);
+const safetyComplianceFlow = async (input: SafetySummaryInput): Promise<SafetySummaryOutput> => {
+    // Return static data based on the timeframe for demo purposes
+    if (input.timeframe === 'daily') {
+        return {
+            summary: "No incidents reported today. All safety checks completed successfully. Near-miss logs are clear.",
+            recommendations: "Continue to encourage proactive hazard reporting during shift handovers. Ensure all personnel are wearing appropriate PPE in the cooler area."
+        };
+    } else if (input.timeframe === 'monthly') {
+        return {
+            summary: "Three minor incidents were logged this month: one slip near the raw mill (no injury), and two instances of improper PPE usage in the preheater section. Overall compliance rate is 98.7%, slightly up from last month.",
+            recommendations: "1. Schedule mandatory PPE refresher training for all preheater staff. 2. Inspect floor surfaces near the raw mill for potential slip hazards and add anti-slip mats if necessary."
+        };
+    }
+    // Default to weekly
+    return {
+        summary: "One minor incident reported in the preheater section this week, related to improper use of PPE. Overall compliance remains high at 98%. All scheduled drills were completed successfully.",
+        recommendations: "Schedule a mandatory PPE refresher training for all staff working in the preheater section within the next 14 days. Review the incident report with the safety committee."
+    };
+}

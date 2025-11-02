@@ -27,29 +27,12 @@ export async function analyzeLogEntry(input: OperatorLogInput): Promise<Operator
   return operatorLogFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'operatorLogPrompt',
-  input: { schema: OperatorLogInputSchema },
-  output: { schema: OperatorLogOutputSchema },
-  prompt: `You are an AI assistant that analyzes operator log entries in a cement plant. For the given log entry, perform the following tasks:
-1.  Determine the overall sentiment (positive, neutral, negative).
-2.  Extract the most important keywords (e.g., equipment names, operational parameters).
-3.  Provide a concise one-sentence summary of the entry.
-
-Log Entry:
-"{{{logEntry}}}"
-
-Provide the analysis in the specified JSON format.`,
-});
-
-const operatorLogFlow = ai.defineFlow(
-  {
-    name: 'operatorLogFlow',
-    inputSchema: OperatorLogInputSchema,
-    outputSchema: OperatorLogOutputSchema,
-  },
-  async (input) => {
-    const { output } = await prompt(input);
-    return output!;
-  }
-);
+const operatorLogFlow = async (input: OperatorLogInput): Promise<OperatorLogOutput> => {
+    // Return static data for demo purposes
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+    return {
+        sentiment: 'neutral',
+        keywords: ['shift handover', 'kiln temperature', 'gearbox vibration', 'monitoring'],
+        summary: 'Shift handover was completed with stable kiln temperature, but a slight increase in gearbox vibration was noted for monitoring.'
+    };
+}
